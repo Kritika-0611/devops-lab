@@ -13,7 +13,15 @@ function Get-UserReport {
         [string]$OutputPath
     )
 
-    $users = Get-MgUser -All -Property DisplayName,UserPrincipalName,Department
+      if (-not (Get-MgContext)) {
+        throw "Not connected to Microsoft Graph. Run Connect-MgGraph first."
+    }
+    try {
+        $users = Get-MgUser -All -Property DisplayName,UserPrincipalName,Department -ErrorAction Stop
+    } catch {
+        Write-Error "Could not get users from Graph: $($_.Exception.Message)"
+        return
+    }
 
     if (-not $Department) {
         $result = $users
