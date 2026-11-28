@@ -13,9 +13,12 @@ function Get-UserReport {
         [string]$OutputPath
     )
 
-      if (-not (Get-MgContext)) {
+    # Safety check 1: are we connected?
+    if (-not (Get-MgContext)) {
         throw "Not connected to Microsoft Graph. Run Connect-MgGraph first."
     }
+
+    # Safety check 2: catch Graph failures
     try {
         $users = Get-MgUser -All -Property DisplayName,UserPrincipalName,Department -ErrorAction Stop
     } catch {
